@@ -3,6 +3,8 @@
 return [
 
     'versao_api' => '1',
+    'frontend_url' => env('APP_FRONTEND_URL','http://localhost:4200'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Name
@@ -40,7 +42,7 @@ return [
     |
     */
 
-    'debug' => env('APP_DEBUG', false),
+    'debug' => env('APP_DEBUG', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -168,6 +170,7 @@ return [
          */
 
         Zizaco\Entrust\EntrustServiceProvider::class,
+        Arcanedev\LogViewer\LogViewerServiceProvider::class,
 
         /*
          * Application Service Providers...

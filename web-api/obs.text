@@ -1,0 +1,49 @@
+
+:: Instalação
+
+00. CACHE_DRIVER=array (.ENV)
+
+01. composer require tymon/jwt-auth
+02. php artisan vendor:publish --provider="Tymon\JWTAuth\Providers\LaravelServiceProvider"
+03. php artisan jwt:secret
+04. composer require fruitcake/laravel-cors
+05. php artisan vendor:publish --tag="cors"
+06. "zizaco/entrust": "5.2.x-dev"
+07. Zizaco\Entrust\EntrustServiceProvider::clas (config/app.php)
+08. 'Entrust'   => Zizaco\Entrust\EntrustFacade::class (config/app.php)
+09. php artisan vendor:publish
+10. RouteServiceProvider.php
+11. Kernel.php
+12. app.php
+12. Middleware 
+13. Routes
+
+
+composer dump-autoload -o
+php artisan config:clear 
+php artisan config:cache
+
+:: LogView
+
+01. Composer: "arcanedev/log-viewer": "~4.7"
+02. Composer Update
+03. 
+
+:: Migrations
+
+php artisan migrate
+php artisan make:migrate criar_tabela_usuarios
+php artisan migrate:fresh --seed
+
+:: Seed
+
+php artisan make:seeder UsuarioSeeder
+
+:: Controller
+
+php artisan make:controller Api\\V1\\CategoriaController
+
+php artisan make:request UsuarioPostRequest
+
+php artisan make:mail OrderShipped
+

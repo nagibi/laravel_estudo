@@ -19,7 +19,7 @@ class CriarTabelaUsuarios extends Migration
             $table->string('nome',200)->nullable(false);
             $table->string('password');
             $table->string('email',191)->unique();
-            $table->boolean('confirmacaoEmail')->defalt(false);
+            $table->boolean('confirmacaoEmail')->default(false);
             $table->string('token',200)->nullable();
             $table->dateTime('dataNascimento')->nullable();
             $table->integer('sexo')->nullable(false)->default(1);

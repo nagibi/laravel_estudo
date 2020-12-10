@@ -46,6 +46,7 @@ class Usuario extends Authenticatable implements JWTSubject
       'dataNascimento' => 'required',
       'sexo' => 'required',
       'email' => 'required|email|max:50',
+      'grupoId'=>'required'
     ];
 
     static $atualizarPerfilValidar = [
@@ -87,7 +88,8 @@ class Usuario extends Authenticatable implements JWTSubject
       'email.required'=>'MSG000073',
       'email.email'=>'MSG000074',
       'email.unique'=>'MSG000077',
-      'email.max'=>'MSG000289'
+      'email.max'=>'MSG000289',
+      'grupoId.required'=>'MSG000289'
     ];
 
     public function arquivo()

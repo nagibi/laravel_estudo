@@ -18,12 +18,12 @@ use App\Http\Requests;
 
 class UsuarioController extends Controller
 {
-       protected $usuarioLogado;
+    protected $usuarioLogado;
+    private $usuario;
 
-
-    public function __construct()
+    public function __construct(Usuario $usuario)
     {    
-        
+        $this->usuario = $usuario;
     }
 
 
@@ -123,30 +123,30 @@ class UsuarioController extends Controller
             ->take($qtdRegistros)
             ->get();
 
-        $data_arr = array();
-        foreach ($records as $record) {
-            $id = $record->id;
-            $nome = $record->nome;
-            $email = $record->email;
-            $sexo = $record->sexo;
-            $status = $record->status;
-            $confirmacaoEmail = $record->confirmacaoEmail;
-            $dataCriacao = $record->dataCriacao;
-            $dataAtualizacao = $record->dataAtualizacao;
+        // $data_arr = array();
+        // foreach ($records as $record) {
+        //     $id = $record->id;
+        //     $nome = $record->nome;
+        //     $email = $record->email;
+        //     $sexo = $record->sexo;
+        //     $status = $record->status;
+        //     $confirmacaoEmail = $record->confirmacaoEmail;
+        //     $dataCriacao = $record->dataCriacao;
+        //     $dataAtualizacao = $record->dataAtualizacao;
 
-            $data_arr[] = array(
-                "id" => $id,
-                "nome" => $nome,
-                "email" => $email,
-                "sexo" => $sexo,
-                "status" => $status,
-                "confirmacaoEmail" => $confirmacaoEmail,
-                "dataCriacao" => $dataCriacao,
-                "dataAtualizacao" => $dataAtualizacao,
-            );
-        }
+        //     $data_arr[] = array(
+        //         "id" => $id,
+        //         "nome" => $nome,
+        //         "email" => $email,
+        //         "sexo" => $sexo,
+        //         "status" => $status,
+        //         "confirmacaoEmail" => $confirmacaoEmail,
+        //         "dataCriacao" => $dataCriacao,
+        //         "dataAtualizacao" => $dataAtualizacao,
+        //     );
+        // }
 
-        return $this->response(200, "MSG000151", ['total' => $totalRecordsFilter, 'data' => $data_arr]);
+        return $this->response(200, "MSG000151", ['total' => $totalRecordsFilter, 'data' => $records]);
     }
 
     /**
@@ -161,7 +161,7 @@ class UsuarioController extends Controller
         try {
 
             //validar
-            $validar = Usuario::$atualizarPerfilValidar;
+            $validar = Usuario::$validar;
             $validar['email'] = $validar['email'] . '|unique:usuarios'; 
             $validator = Validator::make(
                 $request->all(),
@@ -175,26 +175,23 @@ class UsuarioController extends Controller
             //cadastrar
             DB::beginTransaction();
             
-            $usuario = new Usuario;
-            $usuario->nome = $request->nome;
-            $usuario->email = $request->email;
-            $usuario->password = Hash::make($request->senha);
-            $usuario->token = Str::random(32);
-            $usuario->dataNascimento = new DateTime();
-            $usuario->status = 1;
-            $usuario->sexo = is_null($request->sexo) ? null : $request->sexo;
-            $usuario->usuarioCriacaoId = JWTAuth::user()->id;
-            $usuario->usuarioAtualizacaoId = JWTAuth::user()->id;
-            $usuario->confirmacaoEmail = $request->confirmacaoEmail;
-            $usuario->save();
+            $this->usuario->fill($request->all());
+            $this->usuario->password = Hash::make($request->senha);
+            $this->usuario->token = Str::random(32);
+            $this->usuario->dataNascimento = new DateTime();
+            $this->usuario->usuarioCriacaoId = JWTAuth::user()->id;
+            $this->usuario->usuarioAtualizacaoId = JWTAuth::user()->id;
+            $this->usuario->save();
 
-            $role = Role::findOrFail($request->grupoId);
-            $usuario->roles()->attach($role);
-            $usuario->save();
+            if (!is_null($request->grupoId)) {
+                $role = Role::findOrFail($request->grupoId);
+                $this->usuario->roles()->attach($role);
+                $this->usuario->save();
+            }
 
             DB::commit();
 
-            return $this->response(201, "MSG000151", $usuario);
+            return $this->response(201, "MSG000151", $this->usuario);
 
         } catch (Exception $e) {
 
@@ -219,24 +216,24 @@ class UsuarioController extends Controller
                 return $this->response(404, "MSG000152");
             }
 
-            $usuario = Usuario::find($id);
+            $this->usuario = Usuario::find($id);
             $usuarioDto = [
-                "id" => $usuario->id,
-                "nome" => $usuario->nome,
-                "email" => $usuario->email,
-                "token" => $usuario->token,
-                "dataNascimento" => $usuario->dataNascimento,
-                "confirmacaoEmail" => $usuario->confirmacaoEmail,
-                "sexo" => $usuario->sexo,
-                "status" => $usuario->status,
-                "dataCriacao" => $usuario->created_at,
-                "dataAtualizacao" => $usuario->updated_at,
-                "usuarioCriacaoId" => $usuario->usuarioCriacaoId,
-                "usuarioAtualizacaoId" => $usuario->usuarioAtualizacaoId,
-                "grupoId" => is_null($usuario->roles->first()) ? null : $usuario->roles->first()->id
+                "id" => $this->usuario->id,
+                "nome" => $this->usuario->nome,
+                "email" => $this->usuario->email,
+                "token" => $this->usuario->token,
+                "dataNascimento" => $this->usuario->dataNascimento,
+                "confirmacaoEmail" => $this->usuario->confirmacaoEmail,
+                "sexo" => $this->usuario->sexo,
+                "status" => $this->usuario->status,
+                "dataCriacao" => $this->usuario->created_at,
+                "dataAtualizacao" => $this->usuario->updated_at,
+                "usuarioCriacaoId" => $this->usuario->usuarioCriacaoId,
+                "usuarioAtualizacaoId" => $this->usuario->usuarioAtualizacaoId,
+                "grupoId" => is_null($this->usuario->roles->first()) ? null : $this->usuario->roles->first()->id
             ];
 
-            if (!is_null(($usuario))) {
+            if (!is_null(($this->usuario))) {
 
                 return $this->response(200, "MSG000151", $usuarioDto);
 
@@ -268,7 +265,7 @@ class UsuarioController extends Controller
             }
 
             //validar
-            $validar = Usuario::$atualizarPerfilValidar;
+            $validar = Usuario::$validar;
             $validar['email'] = $validar['email'] . '|unique:usuarios'. ',email,' . $id; 
             $validator = Validator::make(
                 $request->all(),
@@ -279,35 +276,33 @@ class UsuarioController extends Controller
                 return $this->erros("MSG000071", $validator);
             }
 
-            $usuario = Usuario::find($id);
+            $this->usuario = Usuario::find($id);
 
-            if (!is_null(($usuario))) {
+            if (!is_null(($this->usuario))) {
 
                 //cadastrar
                 DB::beginTransaction();
                 
-                $usuario->nome = $request->nome;
-                $usuario->email = $request->email;
-                $usuario->password = Hash::make($request->senha);;
-                $usuario->dataNascimento = $request->dataNascimento;
-                $usuario->sexo = $request->sexo;
-                $usuario->usuarioAtualizacaoId = JWTAuth::user()->id;
-                $usuario->confirmacaoEmail = $request->confirmacaoEmail;
-                $usuario->save();
+                $this->usuario->fill($request->all());
+                $this->usuario->password = Hash::make($request->senha);;
+                $this->usuario->usuarioAtualizacaoId = JWTAuth::user()->id;
+                $this->usuario->save();
                 
-                $role = Role::findOrFail($request->grupoId);
+                if (!is_null($request->grupoId)) {
+                    $role = Role::findOrFail($request->grupoId);
                 
-                if(!$usuario->hasRole($role->name)){
-                    $usuario->detachRoles($usuario->roles);
-                    $usuario->roles()->attach($role);
-                    $usuario->save();
-                 }
+                    if(!$this->usuario->hasRole($role->name)){
+                        $this->usuario->detachRoles($this->usuario->roles);
+                        $this->usuario->roles()->attach($role);
+                        $this->usuario->save();
+                     }
+                }
 
                 DB::commit();
 
-                $usuario->grupoId = $role->id;
+                $this->usuario->grupoId = $role->id;
 
-                return $this->response(200, "MSG000151", $usuario);
+                return $this->response(200, "MSG000151", $this->usuario);
 
             } else {
 
@@ -337,11 +332,11 @@ class UsuarioController extends Controller
                 return $this->response(404, "MSG000152");
             }
 
-            $usuario = Usuario::find($id);
+            $this->usuario = Usuario::find($id);
 
-            if (!is_null(($usuario))) {
+            if (!is_null(($this->usuario))) {
 
-                $usuario->delete();
+                $this->usuario->delete();
                 return $this->response(200, "MSG000144");
 
             } else {
@@ -363,11 +358,11 @@ class UsuarioController extends Controller
                 return $this->response(404, "MSG000152");
             }
 
-            $usuario = Usuario::select('nome')->where('id',$id)->first();
+            $this->usuario = Usuario::select('nome')->where('id',$id)->first();
 
-            if (!is_null(($usuario))) {
+            if (!is_null(($this->usuario))) {
 
-                return $this->response(200, "MSG000144", $usuario->nome);
+                return $this->response(200, "MSG000144", $this->usuario->nome);
 
             } else {
 
@@ -389,14 +384,14 @@ class UsuarioController extends Controller
                 return $this->response(404, "MSG000152");
             }
 
-            $usuario = Usuario::find($id);
+            $this->usuario = Usuario::find($id);
 
-            if (!is_null(($usuario))) {
+            if (!is_null(($this->usuario))) {
 
-                $usuario->status = $request->status;
-                $usuario->save();
+                $this->usuario->status = $request->status;
+                $this->usuario->save();
 
-                return $this->response(200, "MSG000144", $usuario);
+                return $this->response(200, "MSG000144", $this->usuario);
 
             } else {
 
@@ -417,15 +412,15 @@ class UsuarioController extends Controller
             return $this->response(404, "MSG000152");
         }
 
-        $usuario = Usuario::find($id);
+        $this->usuario = Usuario::find($id);
         $role = Role::find($request->id);
 
-        if (!is_null(($usuario)) || !is_null(($role))) {
+        if (!is_null(($this->usuario)) || !is_null(($role))) {
 
-            $usuario->roles()->attach($role->id);
-            $usuario->save();
+            $this->usuario->roles()->attach($role->id);
+            $this->usuario->save();
 
-            return $this->response(200, "MSG000144", $usuario);
+            return $this->response(200, "MSG000144", $this->usuario);
 
         } else {
 
