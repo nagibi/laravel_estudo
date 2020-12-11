@@ -15,7 +15,14 @@ use Illuminate\Support\Facades\Route;
 */
 
 /*****************
- * Global
+ * Home
+ *****************/
+
+Route::get('/cep/{numero}', 'HomeController@cep');
+
+
+/*****************
+ * Enums
  *****************/
 
 Route::get('enums/sim-nao', 'EnumController@simNao');
@@ -58,6 +65,7 @@ Route::group(['middleware' => 'validar-acesso:teste|teste,usuario-cadastrar'], f
 
 });
 
+
 Route::post('auth/cadastrar', 'AuthController@cadastrar');;
 Route::post('auth/login', 'AuthController@login');;
 Route::get('auth/confirmar-email/{token}', 'AuthController@confirmarEmail');;
@@ -67,3 +75,21 @@ Route::post('auth/permission', 'AuthController@createPermission');
 Route::post('auth/assign-role', 'AuthController@assignRole');
 Route::post('auth/attach-permission', 'AuthController@attachPermission');
 
+/*****************
+ * Categorias
+ *****************/
+Route::group(['middleware' => 'validar-acesso:teste|teste,usuario-cadastrar'], function () {
+
+
+Route::get('categorias', 'CategoriaController@pesquisar');
+Route::get('categorias/total','CategoriaController@total');
+Route::get('categorias/{id}', 'CategoriaController@obter');
+Route::get('categorias/{id}/nome','CategoriaController@nome');
+Route::post('categorias', 'CategoriaController@cadastrar');
+Route::put('categorias/{id}', 'CategoriaController@atualizar');
+Route::put('categorias/{id}/status','CategoriaController@status');
+Route::post('categorias/{id}/grupos','CategoriaController@grupo');
+Route::delete('categorias/{id}','CategoriaController@deletar');
+
+
+});

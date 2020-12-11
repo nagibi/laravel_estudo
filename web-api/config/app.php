@@ -171,6 +171,7 @@ return [
 
         Zizaco\Entrust\EntrustServiceProvider::class,
         Arcanedev\LogViewer\LogViewerServiceProvider::class,
+        BrunoCouty\BuscaViaCep\BuscaViaCepServiceProvider::class,
 
         /*
          * Application Service Providers...
