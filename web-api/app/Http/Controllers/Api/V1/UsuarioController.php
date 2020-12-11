@@ -18,7 +18,6 @@ use App\Http\Requests;
 
 class UsuarioController extends Controller
 {
-    protected $usuarioLogado;
     private $usuario;
 
     public function __construct(Usuario $usuario)
@@ -311,6 +310,9 @@ class UsuarioController extends Controller
             }
 
         } catch (Exception $ex) {
+
+            DB::rollback();
+
             return $this->response(404, "MSG000131");
         }
 
