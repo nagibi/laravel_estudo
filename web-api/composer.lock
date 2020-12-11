@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "360906b47a699da67747c61a5f06624d",
+    "content-hash": "d4161a6c1b3d8923ed0bfee525c1b470",
     "packages": [
         {
             "name": "arcanedev/log-viewer",
@@ -192,51 +192,6 @@
                 "source": "https://github.com/asm89/stack-cors/tree/v2.0.2"
             },
             "time": "2020-10-29T16:03:21+00:00"
-        },
-        {
-            "name": "brunocouty/busca-via-cep",
-            "version": "1.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/brunocouty/busca-via-cep.git",
-                "reference": "d272fcbbe02664b97b6690140482ac95c56476dd"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/brunocouty/busca-via-cep/zipball/d272fcbbe02664b97b6690140482ac95c56476dd",
-                "reference": "d272fcbbe02664b97b6690140482ac95c56476dd",
-                "shasum": ""
-            },
-            "require": {
-                "guzzlehttp/guzzle": "~6.0",
-                "illuminate/contracts": "~5.1",
-                "illuminate/database": "~5.1",
-                "illuminate/http": "~5.1",
-                "illuminate/support": "~5.1",
-                "php": ">=5.5.9"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "BrunoCouty\\BuscaViaCep\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Bruno Couty",
-                    "email": "brunocouty@gmail.com"
-                }
-            ],
-            "description": "Encontre os dados de um endereço a partir do CEP!",
-            "support": {
-                "issues": "https://github.com/brunocouty/busca-via-cep/issues",
-                "source": "https://github.com/brunocouty/busca-via-cep/tree/1.0.0"
-            },
-            "time": "2017-06-06T20:00:55+00:00"
         },
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -2323,6 +2278,56 @@
                 "wiki": "https://github.com/ramsey/uuid/wiki"
             },
             "time": "2020-02-21T04:36:14+00:00"
+        },
+        {
+            "name": "robersonfaria/cepaberto",
+            "version": "2.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/robersonfaria/cepaberto.git",
+                "reference": "29f111b3b78c30d99b678af9f923792cb4934c0c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/robersonfaria/cepaberto/zipball/29f111b3b78c30d99b678af9f923792cb4934c0c",
+                "reference": "29f111b3b78c30d99b678af9f923792cb4934c0c",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^6.1"
+            },
+            "type": "package",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "RobersonFaria\\Cepaberto\\Providers\\CepabertoServiceProvider"
+                    ],
+                    "aliases": {
+                        "CepAberto": "RobersonFaria\\Cepaberto\\Facade\\CepAberto"
+                    }
+                }
+            },
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Pacote Laravel para consultas de CEP e endereços - API Cep Aberto.",
+            "keywords": [
+                "CEP Aberto",
+                "cep",
+                "endereco",
+                "laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/robersonfaria/cepaberto/issues",
+                "source": "https://github.com/robersonfaria/cepaberto/tree/2.0.1"
+            },
+            "time": "2018-03-26T18:58:10+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",

@@ -171,7 +171,7 @@ return [
 
         Zizaco\Entrust\EntrustServiceProvider::class,
         Arcanedev\LogViewer\LogViewerServiceProvider::class,
-        BrunoCouty\BuscaViaCep\BuscaViaCepServiceProvider::class,
+        RobersonFaria\Cepaberto\Providers\CepabertoServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -236,6 +236,8 @@ return [
 
         'JWTAuth'   => Tymon\JWTAuth\Facades\JWTAuth::class,
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
-        'Entrust'   => Zizaco\Entrust\EntrustFacade::class,    ],
+        'Entrust'   => Zizaco\Entrust\EntrustFacade::class,    
+        'CepAberto' => RobersonFaria\Cepaberto\Facade\CepAberto::class,
+    ],
 
 ];

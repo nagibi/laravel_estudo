@@ -1,7 +1,6 @@
 
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 /*
 |--------------------------------------------------------------------------
@@ -12,14 +11,22 @@ use Illuminate\Support\Facades\Route;
 | routes are loaded by the RouteServiceProvider within a group which
 | is assigned the "api" middleware group. Enjoy building your API!
 |
-*/
+ */
 
 /*****************
- * Home
+ * Localidade
  *****************/
 
-Route::get('/cep/{numero}', 'HomeController@cep');
-
+Route::group(['middleware' => 'validar-acesso:admin'], function () {
+    Route::get('localidades/cep/{cep}', 'LocalidadeController@cep');
+    Route::get('localidades/ufs', 'LocalidadeController@ufs');
+    Route::get('localidades/ufs/{uf}/cidades', 'LocalidadeController@ufsCidades');
+    Route::get('localidades/paises', 'LocalidadeController@paises');
+    Route::get('localidades/paises/{pais}/ufs', 'LocalidadeController@paisesUfs');
+    Route::get('localidades/cidades', 'LocalidadeController@cidades');
+    Route::get('localidades/geo', 'LocalidadeController@geo');
+    Route::get('localidades/logradouro', 'LocalidadeController@logradouro');
+});
 
 /*****************
  * Enums
@@ -38,18 +45,17 @@ Route::get('enums/status', 'EnumController@status');
 Route::group(['middleware' => 'validar-acesso:admin'], function () {
 
     Route::get('usuarios', 'UsuarioController@pesquisar');
-    Route::get('usuarios/total','UsuarioController@total');
+    Route::get('usuarios/total', 'UsuarioController@total');
     Route::get('usuarios/{id}', 'UsuarioController@obter');
-    Route::get('usuarios/{id}/nome','UsuarioController@nome');
+    Route::get('usuarios/{id}/nome', 'UsuarioController@nome');
     Route::post('usuarios', 'UsuarioController@cadastrar');
     Route::put('usuarios/{id}', 'UsuarioController@atualizar');
     // Route::match(['put','get'],['usuarios/{id}', 'UsuarioController@atualizar']);
-    Route::put('usuarios/{id}/status','UsuarioController@status');
-    Route::post('usuarios/{id}/grupos','UsuarioController@grupo');
-    Route::delete('usuarios/{id}','UsuarioController@deletar');
+    Route::put('usuarios/{id}/status', 'UsuarioController@status');
+    Route::post('usuarios/{id}/grupos', 'UsuarioController@grupo');
+    Route::delete('usuarios/{id}', 'UsuarioController@deletar');
 
 });
-
 
 /*****************
  * Auth
@@ -65,10 +71,9 @@ Route::group(['middleware' => 'validar-acesso:teste|teste,usuario-cadastrar'], f
 
 });
 
-
-Route::post('auth/cadastrar', 'AuthController@cadastrar');;
-Route::post('auth/login', 'AuthController@login');;
-Route::get('auth/confirmar-email/{token}', 'AuthController@confirmarEmail');;
+Route::post('auth/cadastrar', 'AuthController@cadastrar');
+Route::post('auth/login', 'AuthController@login');
+Route::get('auth/confirmar-email/{token}', 'AuthController@confirmarEmail');
 Route::post('auth/resetar-senha', 'AuthController@resetarSenha');
 Route::post('auth/role', 'AuthController@createRole');
 Route::post('auth/permission', 'AuthController@createPermission');
@@ -80,16 +85,14 @@ Route::post('auth/attach-permission', 'AuthController@attachPermission');
  *****************/
 Route::group(['middleware' => 'validar-acesso:teste|teste,usuario-cadastrar'], function () {
 
-
-Route::get('categorias', 'CategoriaController@pesquisar');
-Route::get('categorias/total','CategoriaController@total');
-Route::get('categorias/{id}', 'CategoriaController@obter');
-Route::get('categorias/{id}/nome','CategoriaController@nome');
-Route::post('categorias', 'CategoriaController@cadastrar');
-Route::put('categorias/{id}', 'CategoriaController@atualizar');
-Route::put('categorias/{id}/status','CategoriaController@status');
-Route::post('categorias/{id}/grupos','CategoriaController@grupo');
-Route::delete('categorias/{id}','CategoriaController@deletar');
-
+    Route::get('categorias', 'CategoriaController@pesquisar');
+    Route::get('categorias/total', 'CategoriaController@total');
+    Route::get('categorias/{id}', 'CategoriaController@obter');
+    Route::get('categorias/{id}/nome', 'CategoriaController@nome');
+    Route::post('categorias', 'CategoriaController@cadastrar');
+    Route::put('categorias/{id}', 'CategoriaController@atualizar');
+    Route::put('categorias/{id}/status', 'CategoriaController@status');
+    Route::post('categorias/{id}/grupos', 'CategoriaController@grupo');
+    Route::delete('categorias/{id}', 'CategoriaController@deletar');
 
 });
