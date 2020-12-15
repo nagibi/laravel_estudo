@@ -37,7 +37,7 @@ class AuthController extends Controller
             }
 
         } catch (Exception $ex) {
-            return $this->response(404, "MSG000131", $ex->getMessage());
+            return $this->response(500, "MSG000131", $ex->getMessage());
         }
     }
 
@@ -93,7 +93,7 @@ class AuthController extends Controller
             return $this->response(200, "MSG000151", $usuario);
 
         } catch (Exception $ex) {
-            return $this->response(404, "MSG000131", $e->getMessage());
+            return $this->response(500, "MSG000131", $ex->getMessage());
         }
 
     }
@@ -136,7 +136,7 @@ class AuthController extends Controller
             }
 
         } catch (Exception $ex) {
-            return $this->response(404, "MSG000131", $e->getMessage());
+            return $this->response(500, "MSG000131", $ex->getMessage());
         }
     }
 
@@ -219,7 +219,7 @@ class AuthController extends Controller
             }
 
         } catch (JWTException $ex) {
-            return $this->response(404, "MSG000131", $e->getMessage());
+            return $this->response(500, "MSG000131", $ex->getMessage());
         }
 
     }
@@ -267,7 +267,7 @@ class AuthController extends Controller
             return $this->response(201, "MSG000039", $usuario);
 
         } catch (Exception $ex) {
-            return $this->response(404, "MSG000131", $e->getMessage());
+            return $this->response(500, "MSG000131", $ex->getMessage());
         }
     }
 
@@ -294,7 +294,7 @@ class AuthController extends Controller
             }
 
         } catch (Exception $ex) {
-            return $this->response(404, "MSG000131", $e->getMessage());
+            return $this->response(500, "MSG000131", $ex->getMessage());
         }
     }
 
@@ -342,7 +342,7 @@ class AuthController extends Controller
             }
 
         } catch (Exception $ex) {
-            return $this->response(404, "MSG000131", $e->getMessage());
+            return $this->response(500, "MSG000131", $ex->getMessage());
         }
     }
 
@@ -357,7 +357,7 @@ class AuthController extends Controller
             return $this->response(200, "MSG000047");
 
         } catch (Expectation $ex) {
-            return $this->response(404, "MSG000131", $ex);
+            return $this->response(500, "MSG000131", $ex->getMessage());
         }
     }
 
@@ -369,13 +369,13 @@ class AuthController extends Controller
             return $this->response(200, "MSG000047", null);
 
         } catch (Expectation $ex) {
-            return $this->response(404, "MSG000131", $e->getMessage());
+            return $this->response(500, "MSG000131", $ex->getMessage());
         }
     }
 
     protected function token($token)
     {
-        return $this->response(404, "MSG000131", [
+        return $this->response(200, "MSG000131", [
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => Auth::guard('api')->factory()->getTTL() * 60,

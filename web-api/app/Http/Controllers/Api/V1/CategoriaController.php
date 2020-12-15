@@ -45,7 +45,7 @@ class CategoriaController extends Controller
             $total = Categoria::all()->count();
             return $this->response(200, "MSG000151", $total);
         } catch (Exception $ex) {
-            return $this->response(404, "MSG000131", $e->getMessage());
+            return $this->response(500, "MSG000131", $ex->getMessage());
         }
     }
 
@@ -122,7 +122,7 @@ class CategoriaController extends Controller
             return $this->response(200, "MSG000151", ['total' => $totalRecordsFilter, 'data' => $categoria]);
 
         } catch (Exception $ex) {
-            return $this->response(404, "MSG000131", $e->getMessage());
+            return $this->response(500, "MSG000131", $ex->getMessage());
         }
     }
 
@@ -158,7 +158,7 @@ class CategoriaController extends Controller
 
         } catch (Exception $ex) {
 
-            return $this->response(404, "MSG000131", $e->getMessage());
+            return $this->response(500, "MSG000131", $ex->getMessage());
         }
     }
 
@@ -190,7 +190,7 @@ class CategoriaController extends Controller
             }
 
         } catch (Exception $ex) {
-            return $this->response(404, "MSG000131", $e->getMessage());
+            return $this->response(500, "MSG000131", $ex->getMessage());
         }
 
     }
@@ -239,7 +239,7 @@ class CategoriaController extends Controller
             }
 
         } catch (Exception $ex) {
-            return $this->response(404, "MSG000131", $e->getMessage());
+            return $this->response(500, "MSG000131", $ex->getMessage());
         }
 
     }
@@ -274,7 +274,7 @@ class CategoriaController extends Controller
             }
 
         } catch (Exception $ex) {
-            return $this->response(404, "MSG000131", $e->getMessage());
+            return $this->response(500, "MSG000131", $ex->getMessage());
         }
     }
 
@@ -299,7 +299,7 @@ class CategoriaController extends Controller
             }
 
         } catch (Exception $ex) {
-            return $this->response(404, "MSG000131", $e->getMessage());
+            return $this->response(500, "MSG000131", $ex->getMessage());
         }
 
     }
@@ -328,7 +328,7 @@ class CategoriaController extends Controller
             }
 
         } catch (Exception $ex) {
-            return $this->response(404, "MSG000131", $e->getMessage());
+            return $this->response(500, "MSG000131", $ex->getMessage());
         }
 
     }

@@ -35,8 +35,8 @@ class UsuarioController extends Controller
         try {
             $total = Usuario::all()->count();
             return $this->response(200, "MSG000151", $total);
-        } catch (Exception $e) {
-            return $this->response(404, "MSG000131", $e->getMessage());
+        } catch (Exception $ex) {
+            return $this->response(500, "MSG000131", $ex->getMessage());
         }
     }
 
@@ -150,7 +150,7 @@ class UsuarioController extends Controller
 
             return $this->response(200, "MSG000151", ['total' => $totalRecordsFilter, 'data' => $records]);
         } catch (Exception $ex) {
-            return $this->response(404, "MSG000131", $ex->getMessage());
+            return $this->response(500, "MSG000131", $ex->getMessage());
         }
 
     }
@@ -203,7 +203,7 @@ class UsuarioController extends Controller
 
             DB::rollback();
 
-            return $this->response(404, "MSG000131", $ex->getMessage());
+            return $this->response(500, "MSG000131", $ex->getMessage());
         }
     }
 
@@ -250,7 +250,7 @@ class UsuarioController extends Controller
             }
 
         } catch (Exception $ex) {
-            return $this->response(404, "MSG000131", $ex->getMessage());
+            return $this->response(500, "MSG000131", $ex->getMessage());
         }
 
     }
@@ -320,7 +320,7 @@ class UsuarioController extends Controller
 
             DB::rollback();
 
-            return $this->response(404, "MSG000131", $ex->getMessage());
+            return $this->response(500, "MSG000131", $ex->getMessage());
         }
 
     }
@@ -355,7 +355,7 @@ class UsuarioController extends Controller
             }
 
         } catch (Exception $ex) {
-            return $this->response(404, "MSG000131", $ex->getMessage());
+            return $this->response(500, "MSG000131", $ex->getMessage());
         }
     }
 
@@ -380,7 +380,7 @@ class UsuarioController extends Controller
             }
 
         } catch (Exception $ex) {
-            return $this->response(404, "MSG000131", $ex->getMessage());
+            return $this->response(500, "MSG000131", $ex->getMessage());
         }
 
     }
@@ -409,7 +409,7 @@ class UsuarioController extends Controller
             }
 
         } catch (Exception $ex) {
-            return $this->response(404, "MSG000131", $ex->getMessage());
+            return $this->response(500, "MSG000131", $ex->getMessage());
         }
 
     }
@@ -440,7 +440,7 @@ class UsuarioController extends Controller
 
             return response()->json("created");
         } catch (Exception $ex) {
-            return $this->response(404, "MSG000131", $ex->getMessage());
+            return $this->response(500, "MSG000131", $ex->getMessage());
         }
 
     }

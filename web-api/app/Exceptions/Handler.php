@@ -50,11 +50,11 @@ class Handler extends ExceptionHandler
             // log the error
             return response()->json([
                 "status" => "Erro",
-                "statusCode" => $exception->getStatusCode(),
+                "statusCode" => "500",
                 "message" => 'MSG000131',
-                "erros" => $exception->getMessage(),
+                "erros" => null,
                 "result" => $exception->getMessage(),
-            ]);
+            ],500);
         }
 
         return parent::render($request, $exception);
