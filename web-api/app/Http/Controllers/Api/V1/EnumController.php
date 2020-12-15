@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 
 class EnumController extends Controller
 {
+
     public function simNao()
     {
 
@@ -17,6 +18,46 @@ class EnumController extends Controller
         return $this->response(200, "MSG000151", $result);
     }
 
+    /**
+     * @OA\Get(
+     *     tags={"Enums"},
+     *     path="/api/v1/enums/status-documento",
+     *     summary="Lista os Status de Documento",
+     *     description="Lista os tipos de Status de Documento",
+     *     operationId="enumStatusDocumento",
+     *     security={ {"bearer": {} }},
+     *   @OA\Response(
+     *     response=201,
+     *     description="Sucesso",
+     *        @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                property="result",
+     *                type="array",
+     *                example={{
+     *                  "valor": 0,
+     *                  "descricao": "Não"
+     *                }, {
+     *                  "valor": 1,
+     *                  "descricao": "Sim"
+     *                }},
+     *                @OA\Items(
+     *                      @OA\Property(
+     *                         property="valor",
+     *                         type="int",
+     *                         example=""
+     *                      ),
+     *                      @OA\Property(
+     *                         property="descricao",
+     *                         type="string",
+     *                         example=""
+     *                      )
+     *                ),
+     *             ),
+     *        ),
+     *   )
+     * )
+     */
     public function statusDocumento()
     {
 

@@ -5,11 +5,20 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 
+/**
+ * Class Categoria
+ *
+ * @OA\Schema(
+ *     description="Categoria model"
+ * )
+ */
+
 class Categoria extends Model
 {
     use ValidatesRequests;
 
     const CREATED_AT = 'dataCriacao';
+
     const UPDATED_AT = 'dataAtualizacao';
 
     protected $fillable = [

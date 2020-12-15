@@ -9,22 +9,20 @@ use Carbon\Carbon;
 use DateTime;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Tymon\JWTAuth\Facades\JWTAuth as JWTAuth;
-use Illuminate\Support\Facades\DB;
-use App\Http\Requests;
 
 class UsuarioController extends Controller
 {
     private $usuario;
 
     public function __construct(Usuario $usuario)
-    {    
+    {
         $this->usuario = $usuario;
     }
-
 
     /**
      * Display a listing of the resource.
@@ -34,118 +32,127 @@ class UsuarioController extends Controller
 
     public function total()
     {
-        $total = Usuario::all()->count();
-        return $this->response(200, "MSG000151", $total);
+        try {
+            $total = Usuario::all()->count();
+            return $this->response(200, "MSG000151", $total);
+        } catch (Exception $e) {
+            return $this->response(404, "MSG000131", $e->getMessage());
+        }
     }
 
     public function pesquisar(Request $request)
     {
-        $qtdRegistros = is_null($request->qtdRegistros) || $request->qtdRegistros == -1 ? 999999999999999 : $request->qtdRegistros;
-        $pageCurrent = $request->get('pageCurrent');
-        $orderBy = is_null($request->orderBy) ? 'id' : $request->orderBy;
-        $orderType = is_null($request->orderType) ? 'desc' : $request->orderType;
+        try {
+            $qtdRegistros = is_null($request->qtdRegistros) || $request->qtdRegistros == -1 ? 999999999999999 : $request->qtdRegistros;
+            $pageCurrent = $request->get('pageCurrent');
+            $orderBy = is_null($request->orderBy) ? 'id' : $request->orderBy;
+            $orderType = is_null($request->orderType) ? 'desc' : $request->orderType;
 
-        $query = Usuario::query();
+            $query = Usuario::query();
 
-        //e-mail
-        if (!is_null($request->get('email'))) {
-            $query = $query->where('usuarios.email', 'like', '%' . $request->get('email') . '%');
-        }
-
-        //nome
-        if (!is_null($request->get('nome'))) {
-            $query = $query->where('usuarios.nome', 'like', '%' . $request->get('nome') . '%');
-        }
-
-        //id
-        if (!is_null($request->get('id'))) {
-            $query = $query->where('usuarios.id', '=', $request->get('id'));
-        }
-
-        //confirmacaoEmail
-        if (!is_null($request->get('confirmacaoEmail'))) {
-            $query = $query->where('confirmacaoEmail', (boolean)json_decode(strtolower($request->get('confirmacaoEmail'))));
-        }
-
-        //status
-        if (!is_null($request->get('status'))) {
-            $query = $query->where('status', '=',$request->get('status'));
-        }
-
-        //sexo
-        if (!is_null($request->get('sexo'))) {
-            $query = $query->where('sexo', '=',$request->get('sexo'));
-        }
-
-        //dataCriacao
-        $dataCriacaoInicial = $request->get('dataCriacaoInicial');
-        $dataCriacaoFinal = $request->get('dataCriacaoFinal');
-
-        if (!is_null(($dataCriacaoInicial)) || !is_null(($dataCriacaoFinal))) {
-
-            if (!is_null(($dataCriacaoInicial))) {
-                $inicial = Carbon::parse($dataCriacaoInicial);
-                $query = $query->where('dataCriacaoInicial', ">=", $inicial);
+            //e-mail
+            if (!is_null($request->get('email'))) {
+                $query = $query->where('usuarios.email', 'like', '%' . $request->get('email') . '%');
             }
 
-            if (!is_null(($dataCriacaoFinal))) {
-
-                $final = Carbon::parse($dataCriacaoFinal)->endOfDay();
-                $query = $query->where('dataCriacaoInicial', "<=", $final);
+            //nome
+            if (!is_null($request->get('nome'))) {
+                $query = $query->where('usuarios.nome', 'like', '%' . $request->get('nome') . '%');
             }
+
+            //id
+            if (!is_null($request->get('id'))) {
+                $query = $query->where('usuarios.id', '=', $request->get('id'));
+            }
+
+            //confirmacaoEmail
+            if (!is_null($request->get('confirmacaoEmail'))) {
+                $query = $query->where('confirmacaoEmail', (boolean) json_decode(strtolower($request->get('confirmacaoEmail'))));
+            }
+
+            //status
+            if (!is_null($request->get('status'))) {
+                $query = $query->where('status', '=', $request->get('status'));
+            }
+
+            //sexo
+            if (!is_null($request->get('sexo'))) {
+                $query = $query->where('sexo', '=', $request->get('sexo'));
+            }
+
+            //dataCriacao
+            $dataCriacaoInicial = $request->get('dataCriacaoInicial');
+            $dataCriacaoFinal = $request->get('dataCriacaoFinal');
+
+            if (!is_null(($dataCriacaoInicial)) || !is_null(($dataCriacaoFinal))) {
+
+                if (!is_null(($dataCriacaoInicial))) {
+                    $inicial = Carbon::parse($dataCriacaoInicial);
+                    $query = $query->where('dataCriacaoInicial', ">=", $inicial);
+                }
+
+                if (!is_null(($dataCriacaoFinal))) {
+
+                    $final = Carbon::parse($dataCriacaoFinal)->endOfDay();
+                    $query = $query->where('dataCriacaoInicial', "<=", $final);
+                }
+            }
+
+            //dataCriacao
+            $dataAtualizacaoInicial = $request->get('dataAtualizacaoInicial');
+            $dataAtualizacaoFinal = $request->get('dataAtualizacaoFinal');
+
+            if (!is_null(($dataAtualizacaoInicial)) || !is_null(($dataAtualizacaoFinal))) {
+
+                if (!is_null(($dataAtualizacaoInicial))) {
+                    $inicial = Carbon::parse($dataAtualizacaoInicial);
+                    $query = $query->where('dataAtualizacaoFinal', ">=", $inicial);
+                }
+
+                if (!is_null(($dataAtualizacaoFinal))) {
+
+                    $final = Carbon::parse($dataAtualizacaoFinal)->endOfDay();
+                    $query = $query->where('dataAtualizacaoFinal', "<=", $final);
+                }
+            }
+
+            $totalRecordsFilter = $query->get()->Count();
+
+            $records = $query
+                ->orderBy($orderBy, $orderType)
+                ->select('usuarios.*')
+                ->skip($pageCurrent)
+                ->take($qtdRegistros)
+                ->get();
+
+            // $data_arr = array();
+            // foreach ($records as $record) {
+            //     $id = $record->id;
+            //     $nome = $record->nome;
+            //     $email = $record->email;
+            //     $sexo = $record->sexo;
+            //     $status = $record->status;
+            //     $confirmacaoEmail = $record->confirmacaoEmail;
+            //     $dataCriacao = $record->dataCriacao;
+            //     $dataAtualizacao = $record->dataAtualizacao;
+
+            //     $data_arr[] = array(
+            //         "id" => $id,
+            //         "nome" => $nome,
+            //         "email" => $email,
+            //         "sexo" => $sexo,
+            //         "status" => $status,
+            //         "confirmacaoEmail" => $confirmacaoEmail,
+            //         "dataCriacao" => $dataCriacao,
+            //         "dataAtualizacao" => $dataAtualizacao,
+            //     );
+            // }
+
+            return $this->response(200, "MSG000151", ['total' => $totalRecordsFilter, 'data' => $records]);
+        } catch (Exception $ex) {
+            return $this->response(404, "MSG000131", $ex->getMessage());
         }
 
-        //dataCriacao
-        $dataAtualizacaoInicial = $request->get('dataAtualizacaoInicial');
-        $dataAtualizacaoFinal = $request->get('dataAtualizacaoFinal');
-
-        if (!is_null(($dataAtualizacaoInicial)) || !is_null(($dataAtualizacaoFinal))) {
-
-            if (!is_null(($dataAtualizacaoInicial))) {
-                $inicial = Carbon::parse($dataAtualizacaoInicial);
-                $query = $query->where('dataAtualizacaoFinal', ">=", $inicial);
-            }
-
-            if (!is_null(($dataAtualizacaoFinal))) {
-
-                $final = Carbon::parse($dataAtualizacaoFinal)->endOfDay();
-                $query = $query->where('dataAtualizacaoFinal', "<=", $final);
-            }
-        }
-
-        $totalRecordsFilter = $query->get()->Count();
-
-        $records = $query
-            ->orderBy($orderBy, $orderType)
-            ->select('usuarios.*')
-            ->skip($pageCurrent)
-            ->take($qtdRegistros)
-            ->get();
-
-        // $data_arr = array();
-        // foreach ($records as $record) {
-        //     $id = $record->id;
-        //     $nome = $record->nome;
-        //     $email = $record->email;
-        //     $sexo = $record->sexo;
-        //     $status = $record->status;
-        //     $confirmacaoEmail = $record->confirmacaoEmail;
-        //     $dataCriacao = $record->dataCriacao;
-        //     $dataAtualizacao = $record->dataAtualizacao;
-
-        //     $data_arr[] = array(
-        //         "id" => $id,
-        //         "nome" => $nome,
-        //         "email" => $email,
-        //         "sexo" => $sexo,
-        //         "status" => $status,
-        //         "confirmacaoEmail" => $confirmacaoEmail,
-        //         "dataCriacao" => $dataCriacao,
-        //         "dataAtualizacao" => $dataAtualizacao,
-        //     );
-        // }
-
-        return $this->response(200, "MSG000151", ['total' => $totalRecordsFilter, 'data' => $records]);
     }
 
     /**
@@ -161,7 +168,7 @@ class UsuarioController extends Controller
 
             //validar
             $validar = Usuario::$validar;
-            $validar['email'] = $validar['email'] . '|unique:usuarios'; 
+            $validar['email'] = $validar['email'] . '|unique:usuarios';
             $validator = Validator::make(
                 $request->all(),
                 $validar,
@@ -173,7 +180,7 @@ class UsuarioController extends Controller
 
             //cadastrar
             DB::beginTransaction();
-            
+
             $this->usuario->fill($request->all());
             $this->usuario->password = Hash::make($request->senha);
             $this->usuario->token = Str::random(32);
@@ -192,11 +199,11 @@ class UsuarioController extends Controller
 
             return $this->response(201, "MSG000151", $this->usuario);
 
-        } catch (Exception $e) {
+        } catch (Exception $ex) {
 
             DB::rollback();
 
-            return $this->response(404, "MSG000131");
+            return $this->response(404, "MSG000131", $ex->getMessage());
         }
     }
 
@@ -209,7 +216,7 @@ class UsuarioController extends Controller
     public function obter($id)
     {
         try {
-            
+
             //validar
             if (is_null($id)) {
                 return $this->response(404, "MSG000152");
@@ -229,7 +236,7 @@ class UsuarioController extends Controller
                 "dataAtualizacao" => $this->usuario->updated_at,
                 "usuarioCriacaoId" => $this->usuario->usuarioCriacaoId,
                 "usuarioAtualizacaoId" => $this->usuario->usuarioAtualizacaoId,
-                "grupoId" => is_null($this->usuario->roles->first()) ? null : $this->usuario->roles->first()->id
+                "grupoId" => is_null($this->usuario->roles->first()) ? null : $this->usuario->roles->first()->id,
             ];
 
             if (!is_null(($this->usuario))) {
@@ -243,7 +250,7 @@ class UsuarioController extends Controller
             }
 
         } catch (Exception $ex) {
-            return $this->response(404, "MSG000131");
+            return $this->response(404, "MSG000131", $ex->getMessage());
         }
 
     }
@@ -265,7 +272,7 @@ class UsuarioController extends Controller
 
             //validar
             $validar = Usuario::$validar;
-            $validar['email'] = $validar['email'] . '|unique:usuarios'. ',email,' . $id; 
+            $validar['email'] = $validar['email'] . '|unique:usuarios' . ',email,' . $id;
             $validator = Validator::make(
                 $request->all(),
                 $validar,
@@ -281,20 +288,20 @@ class UsuarioController extends Controller
 
                 //cadastrar
                 DB::beginTransaction();
-                
+
                 $this->usuario->fill($request->all());
-                $this->usuario->password = Hash::make($request->senha);;
+                $this->usuario->password = Hash::make($request->senha);
                 $this->usuario->usuarioAtualizacaoId = JWTAuth::user()->id;
                 $this->usuario->save();
-                
+
                 if (!is_null($request->grupoId)) {
                     $role = Role::findOrFail($request->grupoId);
-                
-                    if(!$this->usuario->hasRole($role->name)){
+
+                    if (!$this->usuario->hasRole($role->name)) {
                         $this->usuario->detachRoles($this->usuario->roles);
                         $this->usuario->roles()->attach($role);
                         $this->usuario->save();
-                     }
+                    }
                 }
 
                 DB::commit();
@@ -313,7 +320,7 @@ class UsuarioController extends Controller
 
             DB::rollback();
 
-            return $this->response(404, "MSG000131");
+            return $this->response(404, "MSG000131", $ex->getMessage());
         }
 
     }
@@ -324,7 +331,7 @@ class UsuarioController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    
+
     public function deletar($id)
     {
 
@@ -348,7 +355,7 @@ class UsuarioController extends Controller
             }
 
         } catch (Exception $ex) {
-            return $this->response(404, "MSG000131");
+            return $this->response(404, "MSG000131", $ex->getMessage());
         }
     }
 
@@ -360,7 +367,7 @@ class UsuarioController extends Controller
                 return $this->response(404, "MSG000152");
             }
 
-            $this->usuario = Usuario::select('nome')->where('id',$id)->first();
+            $this->usuario = Usuario::select('nome')->where('id', $id)->first();
 
             if (!is_null(($this->usuario))) {
 
@@ -373,7 +380,7 @@ class UsuarioController extends Controller
             }
 
         } catch (Exception $ex) {
-            return $this->response(404, "MSG000131");
+            return $this->response(404, "MSG000131", $ex->getMessage());
         }
 
     }
@@ -402,35 +409,40 @@ class UsuarioController extends Controller
             }
 
         } catch (Exception $ex) {
-            return $this->response(404, "MSG000131");
+            return $this->response(404, "MSG000131", $ex->getMessage());
         }
 
     }
 
     public function grupo($id, Request $request)
     {
-        $grupoId = $request->id;
-        if (is_null($id) || $grupoId) {
-            return $this->response(404, "MSG000152");
+        try {
+            $grupoId = $request->id;
+            if (is_null($id) || $grupoId) {
+                return $this->response(404, "MSG000152");
+            }
+
+            $this->usuario = Usuario::find($id);
+            $role = Role::find($request->id);
+
+            if (!is_null(($this->usuario)) || !is_null(($role))) {
+
+                $this->usuario->roles()->attach($role->id);
+                $this->usuario->save();
+
+                return $this->response(200, "MSG000144", $this->usuario);
+
+            } else {
+
+                return $this->response(404, "MSG000112");
+
+            }
+
+            return response()->json("created");
+        } catch (Exception $ex) {
+            return $this->response(404, "MSG000131", $ex->getMessage());
         }
 
-        $this->usuario = Usuario::find($id);
-        $role = Role::find($request->id);
-
-        if (!is_null(($this->usuario)) || !is_null(($role))) {
-
-            $this->usuario->roles()->attach($role->id);
-            $this->usuario->save();
-
-            return $this->response(200, "MSG000144", $this->usuario);
-
-        } else {
-
-            return $this->response(404, "MSG000112");
-
-        }
-
-        return response()->json("created");
     }
 
 }

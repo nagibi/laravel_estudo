@@ -5,14 +5,12 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Mail\ConfirmarEmail;
 use App\Mail\ResetarSenha;
-use App\Permission;
 use App\Role;
 use App\Usuario;
 use DateTime;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail as FacadesMail;
 use Illuminate\Support\Facades\Validator;
@@ -23,7 +21,6 @@ use Tymon\JWTAuth\Facades\JWTAuth as JWTAuth;
 
 class AuthController extends Controller
 {
-
     public function permissoes()
     {
         try {
@@ -36,15 +33,16 @@ class AuthController extends Controller
             if ($grupo != null && count($permissoes) == 0) {
                 return $this->response(404, "MSG000112");
             } else {
-                return $this->response(200, "MSG000144", ['grupo'=>$grupo,'permissoes'=>$permissoes]);
+                return $this->response(200, "MSG000144", ['grupo' => $grupo, 'permissoes' => $permissoes]);
             }
 
         } catch (Exception $ex) {
-            return $this->response(404, "MSG000131",$ex);
+            return $this->response(404, "MSG000131", $ex->getMessage());
         }
     }
 
-    public function usuarioLogado(){
+    public function usuarioLogado()
+    {
         try {
 
             $usuario = JWTAuth::user();
@@ -60,7 +58,7 @@ class AuthController extends Controller
             }
 
         } catch (Exception $ex) {
-            return $this->response(404, "MSG000131");
+            return $this->response(404, "MSG000131", $e->getMessage());
         }
 
     }
@@ -77,8 +75,8 @@ class AuthController extends Controller
 
             //validar
             $validar = Usuario::$atualizarPerfilValidar;
-            $validar['email'] = $validar['email'] . '|unique:usuarios'. ',email,' . $usuario->id; 
-            $validator = Validator::make($request->all(), $validar,Usuario::$validarMensagens);
+            $validar['email'] = $validar['email'] . '|unique:usuarios' . ',email,' . $usuario->id;
+            $validator = Validator::make($request->all(), $validar, Usuario::$validarMensagens);
 
             if ($validator->fails()) {
                 return $this->erros("MSG000071", $validator);
@@ -91,31 +89,32 @@ class AuthController extends Controller
             $usuario->usuarioAtualizacaoId = JWTAuth::user()->id;
             $usuario->arquivoId = !is_null($request->arquivoId) ? $request->arquivoId : null;
             $usuario->save();
-            
+
             return $this->response(200, "MSG000151", $usuario);
 
         } catch (Exception $ex) {
-            return $this->response(404, "MSG000131");
+            return $this->response(404, "MSG000131", $e->getMessage());
         }
 
     }
 
-    public function alterarSenha(Request $request){
+    public function alterarSenha(Request $request)
+    {
         try {
 
             //validar
             $validator = Validator::make(
-                $request->all(), 
+                $request->all(),
                 Usuario::$alterarSenhaValidar,
                 Usuario::$validarMensagens);
 
             if ($validator->fails()) {
-                return $this->erros("MSG000071",$validator,"MSG000126");
+                return $this->erros("MSG000071", $validator, "MSG000126");
             }
 
             $usuario = JWTAuth::user();
 
-            if(!Hash::check($request->get('senhaAtual'), $usuario->password)){
+            if (!Hash::check($request->get('senhaAtual'), $usuario->password)) {
                 return $this->erro(
                     "MSG000071",
                     "senhaAtual",
@@ -127,7 +126,7 @@ class AuthController extends Controller
                 $usuario->password = Hash::make($request->novaSenha);
                 $usuario->usuarioAtualizacaoId = $usuario->id;
                 $usuario->save();
-                
+
                 return $this->response(200, "MSG000151", $usuario);
 
             } else {
@@ -137,14 +136,14 @@ class AuthController extends Controller
             }
 
         } catch (Exception $ex) {
-            return $this->response(404, "MSG000131");
+            return $this->response(404, "MSG000131", $e->getMessage());
         }
     }
 
     public function login(Request $request)
     {
         $validator = Validator::make(
-            $request->all(), 
+            $request->all(),
             Usuario::$loginValidar,
             Usuario::$validarMensagens);
 
@@ -153,7 +152,7 @@ class AuthController extends Controller
         }
 
         try {
-            
+
             $input = $request->only('email', 'password');
             if (!$token = JWTAuth::attempt($input)) {
 
@@ -196,7 +195,7 @@ class AuthController extends Controller
                         $permissoes = $usuario->roles->first()->permissions;
 
                         $funcionalidades = array();
-                        foreach($permissoes  as $record){
+                        foreach ($permissoes as $record) {
                             $funcionalidades[] = $record->name;
                         }
 
@@ -213,14 +212,14 @@ class AuthController extends Controller
                                 'tokenExpira' => Auth::guard('api')->factory()->getTTL(),
                                 'token' => "Bearer " . $token,
                                 'grupo' => $grupo,
-                                'funcionalidades' => $funcionalidades
+                                'funcionalidades' => $funcionalidades,
                             ]);
                     }
                     break;
             }
 
         } catch (JWTException $ex) {
-            return $this->response(404, "MSG000131",$ex);
+            return $this->response(404, "MSG000131", $e->getMessage());
         }
 
     }
@@ -231,7 +230,7 @@ class AuthController extends Controller
 
             //validando form
             $validator = Validator::make(
-                $request->all(), 
+                $request->all(),
                 Usuario::$cadastrarValidar,
                 Usuario::$validarMensagens);
 
@@ -242,7 +241,7 @@ class AuthController extends Controller
             //validando e-mail
             $usuario = Usuario::where('email', '=', $request->email)->first();
 
-            if(!is_null(($usuario))){
+            if (!is_null(($usuario))) {
                 return $this->response(200, "MSG000259");
             }
 
@@ -268,7 +267,7 @@ class AuthController extends Controller
             return $this->response(201, "MSG000039", $usuario);
 
         } catch (Exception $ex) {
-            return $this->response(404, "MSG000131",$ex);
+            return $this->response(404, "MSG000131", $e->getMessage());
         }
     }
 
@@ -295,7 +294,7 @@ class AuthController extends Controller
             }
 
         } catch (Exception $ex) {
-            return $this->response(404, "MSG000131",$ex);
+            return $this->response(404, "MSG000131", $e->getMessage());
         }
     }
 
@@ -304,7 +303,7 @@ class AuthController extends Controller
 
         try {
             $validator = Validator::make(
-                $request->all(), 
+                $request->all(),
                 Usuario::$resetarSenhaValidar,
                 Usuario::$validarMensagens);
 
@@ -330,7 +329,7 @@ class AuthController extends Controller
                     $usuario->password = Hash::make($novaSenha);
                     $usuario->save();
 
-                    $usuario->password =$novaSenha;
+                    $usuario->password = $novaSenha;
 
                     FacadesMail::send(new ResetarSenha($usuario));
 
@@ -343,14 +342,13 @@ class AuthController extends Controller
             }
 
         } catch (Exception $ex) {
-            return $this->response(404, "MSG000131",$ex);
+            return $this->response(404, "MSG000131", $e->getMessage());
         }
     }
 
     public function logout(Request $request)
     {
         try {
-
 
             JWTAuth::invalidate(JWTAuth::getToken());
             Auth::guard('api')->logout();
@@ -359,7 +357,7 @@ class AuthController extends Controller
             return $this->response(200, "MSG000047");
 
         } catch (Expectation $ex) {
-            return $this->response(404, "MSG000131",$ex);
+            return $this->response(404, "MSG000131", $ex);
         }
     }
 
@@ -371,17 +369,17 @@ class AuthController extends Controller
             return $this->response(200, "MSG000047", null);
 
         } catch (Expectation $ex) {
-            return $this->response(404, "MSG000131",$ex);
+            return $this->response(404, "MSG000131", $e->getMessage());
         }
     }
 
     protected function token($token)
     {
-        return $this->response(404, "MSG000131",[
+        return $this->response(404, "MSG000131", [
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => Auth::guard('api')->factory()->getTTL() * 60,
-        ],"Token");
+        ], "Token");
     }
 
     // public function createRole(Request $request)

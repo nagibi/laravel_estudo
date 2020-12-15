@@ -1,0 +1,77 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Aplicação Padrão  WebAPI",
+        "description": "Aplicação padrão para utilização de API em qualquer aplicação",
+        "contact": {
+            "name": "Suporte API",
+            "url": "http://www.ibigan.com.br",
+            "email": "nagibi@gmail.com"
+        },
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/v1/enums/status-documento": {
+            "get": {
+                "tags": [
+                    "Enums"
+                ],
+                "summary": "Lista os Status de Documento",
+                "description": "Lista os tipos de Status de Documento",
+                "operationId": "enumStatusDocumento",
+                "responses": {
+                    "201": {
+                        "description": "Sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "valor": {
+                                                        "type": "int",
+                                                        "example": ""
+                                                    },
+                                                    "descricao": {
+                                                        "type": "string",
+                                                        "example": ""
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "example": [
+                                                {
+                                                    "valor": 0,
+                                                    "descricao": "Não"
+                                                },
+                                                {
+                                                    "valor": 1,
+                                                    "descricao": "Sim"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Categoria": {
+                "description": "Categoria model"
+            }
+        }
+    }
+}

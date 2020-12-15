@@ -9,7 +9,6 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth as JWTAuth;
-use Illuminate\Support\Facades\DB;
 
 class CategoriaController extends Controller
 {
@@ -21,17 +20,17 @@ class CategoriaController extends Controller
         $this->categoria = $categoria;
         // $categoria = Categoria::with('categoria','subcategorias')->findOrFail(2);
         Categoria::with('categoria')
-        ->with(['subcategorias' => function ($q) use($status) {
+            ->with(['subcategorias' => function ($q) use ($status) {
                 $q->where('status', $status);
-        }])->findOrFail(2);
-      
+            }])->findOrFail(2);
+
         // ProductCategory::with('children')
         // ->with(['products' => function ($q) use($SpecificID) {
         //     $q->whereHas('types', function($q) use($SpecificID) {
         //         $q->where('types.id', $SpecificID)
         //     });
         // }])
-        // ->get(); 
+        // ->get();
     }
 
     /**
@@ -42,81 +41,89 @@ class CategoriaController extends Controller
 
     public function total()
     {
-        $total = Categoria::all()->count();
-        return $this->response(200, "MSG000151", $total);
+        try {
+            $total = Categoria::all()->count();
+            return $this->response(200, "MSG000151", $total);
+        } catch (Exception $ex) {
+            return $this->response(404, "MSG000131", $e->getMessage());
+        }
     }
 
     public function pesquisar(Request $request)
     {
-        $qtdRegistros = is_null($request->qtdRegistros) || $request->qtdRegistros == -1 ? 999999999999999 : $request->qtdRegistros;
-        $pageCurrent = $request->get('pageCurrent');
-        $orderBy = is_null($request->orderBy) ? 'id' : $request->orderBy;
-        $orderType = is_null($request->orderType) ? 'desc' : $request->orderType;
+        try {
+            $qtdRegistros = is_null($request->qtdRegistros) || $request->qtdRegistros == -1 ? 999999999999999 : $request->qtdRegistros;
+            $pageCurrent = $request->get('pageCurrent');
+            $orderBy = is_null($request->orderBy) ? 'id' : $request->orderBy;
+            $orderType = is_null($request->orderType) ? 'desc' : $request->orderType;
 
-        $query = Categoria::query();
+            $query = Categoria::query();
 
-        //nome
-        if (!is_null($request->get('nome'))) {
-            $query = $query->where('categorias.nome', 'like', '%' . $request->get('nome') . '%');
-        }
-
-        //id
-        if (!is_null($request->get('id'))) {
-            $query = $query->where('categorias.id', '=', $request->get('id'));
-        }
-
-        //status
-        if (!is_null($request->get('status'))) {
-            $query = $query->where('status', '=', $request->get('status'));
-        }
-
-        //dataCriacao
-        $dataCriacaoInicial = $request->get('dataCriacaoInicial');
-        $dataCriacaoFinal = $request->get('dataCriacaoFinal');
-
-        if (!is_null(($dataCriacaoInicial)) || !is_null(($dataCriacaoFinal))) {
-
-            if (!is_null(($dataCriacaoInicial))) {
-                $inicial = Carbon::parse($dataCriacaoInicial);
-                $query = $query->where('dataCriacaoInicial', ">=", $inicial);
+            //nome
+            if (!is_null($request->get('nome'))) {
+                $query = $query->where('categorias.nome', 'like', '%' . $request->get('nome') . '%');
             }
 
-            if (!is_null(($dataCriacaoFinal))) {
-
-                $final = Carbon::parse($dataCriacaoFinal)->endOfDay();
-                $query = $query->where('dataCriacaoInicial', "<=", $final);
+            //id
+            if (!is_null($request->get('id'))) {
+                $query = $query->where('categorias.id', '=', $request->get('id'));
             }
+
+            //status
+            if (!is_null($request->get('status'))) {
+                $query = $query->where('status', '=', $request->get('status'));
+            }
+
+            //dataCriacao
+            $dataCriacaoInicial = $request->get('dataCriacaoInicial');
+            $dataCriacaoFinal = $request->get('dataCriacaoFinal');
+
+            if (!is_null(($dataCriacaoInicial)) || !is_null(($dataCriacaoFinal))) {
+
+                if (!is_null(($dataCriacaoInicial))) {
+                    $inicial = Carbon::parse($dataCriacaoInicial);
+                    $query = $query->where('dataCriacaoInicial', ">=", $inicial);
+                }
+
+                if (!is_null(($dataCriacaoFinal))) {
+
+                    $final = Carbon::parse($dataCriacaoFinal)->endOfDay();
+                    $query = $query->where('dataCriacaoInicial', "<=", $final);
+                }
+            }
+
+            //dataCriacao
+            $dataAtualizacaoInicial = $request->get('dataAtualizacaoInicial');
+            $dataAtualizacaoFinal = $request->get('dataAtualizacaoFinal');
+
+            if (!is_null(($dataAtualizacaoInicial)) || !is_null(($dataAtualizacaoFinal))) {
+
+                if (!is_null(($dataAtualizacaoInicial))) {
+                    $inicial = Carbon::parse($dataAtualizacaoInicial);
+                    $query = $query->where('dataAtualizacaoFinal', ">=", $inicial);
+                }
+
+                if (!is_null(($dataAtualizacaoFinal))) {
+
+                    $final = Carbon::parse($dataAtualizacaoFinal)->endOfDay();
+                    $query = $query->where('dataAtualizacaoFinal', "<=", $final);
+                }
+            }
+
+            $totalRecordsFilter = $query->get()->Count();
+
+            $records = $query
+                ->orderBy($orderBy, $orderType)
+                ->select('categorias.*')
+                ->skip($pageCurrent)
+                ->take($qtdRegistros)
+                ->get();
+
+            return $this->response(200, "MSG000151", ['total' => $totalRecordsFilter, 'data' => $categoria]);
+
+        } catch (Exception $ex) {
+            return $this->response(404, "MSG000131", $e->getMessage());
         }
-
-        //dataCriacao
-        $dataAtualizacaoInicial = $request->get('dataAtualizacaoInicial');
-        $dataAtualizacaoFinal = $request->get('dataAtualizacaoFinal');
-
-        if (!is_null(($dataAtualizacaoInicial)) || !is_null(($dataAtualizacaoFinal))) {
-
-            if (!is_null(($dataAtualizacaoInicial))) {
-                $inicial = Carbon::parse($dataAtualizacaoInicial);
-                $query = $query->where('dataAtualizacaoFinal', ">=", $inicial);
-            }
-
-            if (!is_null(($dataAtualizacaoFinal))) {
-
-                $final = Carbon::parse($dataAtualizacaoFinal)->endOfDay();
-                $query = $query->where('dataAtualizacaoFinal', "<=", $final);
-            }
-        }
-
-        $totalRecordsFilter = $query->get()->Count();
-
-        $records = $query
-            ->orderBy($orderBy, $orderType)
-            ->select('categorias.*')
-            ->skip($pageCurrent)
-            ->take($qtdRegistros)
-            ->get();
-
-        
-        return $this->response(200, "MSG000151", ['total' => $totalRecordsFilter, 'data' => $categoria]);
     }
 
     /**
@@ -149,9 +156,9 @@ class CategoriaController extends Controller
 
             return $this->response(201, "MSG000151", $this->categoria);
 
-        } catch (Exception $e) {
+        } catch (Exception $ex) {
 
-            return $this->response(404, "MSG000131", $e);
+            return $this->response(404, "MSG000131", $e->getMessage());
         }
     }
 
@@ -183,7 +190,7 @@ class CategoriaController extends Controller
             }
 
         } catch (Exception $ex) {
-            return $this->response(404, "MSG000131");
+            return $this->response(404, "MSG000131", $e->getMessage());
         }
 
     }
@@ -232,7 +239,7 @@ class CategoriaController extends Controller
             }
 
         } catch (Exception $ex) {
-            return $this->response(404, "MSG000131");
+            return $this->response(404, "MSG000131", $e->getMessage());
         }
 
     }
@@ -267,7 +274,7 @@ class CategoriaController extends Controller
             }
 
         } catch (Exception $ex) {
-            return $this->response(404, "MSG000131");
+            return $this->response(404, "MSG000131", $e->getMessage());
         }
     }
 
@@ -292,7 +299,7 @@ class CategoriaController extends Controller
             }
 
         } catch (Exception $ex) {
-            return $this->response(404, "MSG000131");
+            return $this->response(404, "MSG000131", $e->getMessage());
         }
 
     }
@@ -321,7 +328,7 @@ class CategoriaController extends Controller
             }
 
         } catch (Exception $ex) {
-            return $this->response(404, "MSG000131");
+            return $this->response(404, "MSG000131", $e->getMessage());
         }
 
     }
